@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Shaking Hands</title>
+  <style>
+    body {
+      background-color: black;
+      color: white;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      padding-top: 100px;
+    }
+    .hand-shake {
+      font-size: 80px;
+      display: inline-block;
+      animation: shake 0.8s ease-in-out infinite alternate;
+      user-select: none;
+      margin: 0 30px;
+      transform-origin: center;
+    }
+    @keyframes shake {
+      0% { transform: rotate(0deg) translateX(0); }
+      50% { transform: rotate(20deg) translateX(10px); }
+      100% { transform: rotate(-20deg) translateX(-10px); }
+    }
+    img {
+      height: 80px;
+      margin: 0 20px;
+    }
+    #result {
+      font-size: 30px;
+      font-weight: bold;
+      margin-top: 40px;
+    }
+    #score {
+      font-size: 35px;          
+      margin-top: 30px;
+      color: white;
+      font-weight: bold;
+      display: flex;
+      justify-content: center;  
+      gap: 80px;                
+    }
+    #score span {
+      min-width: 120px;          
+      text-align: center;
+    }
+    button {
+      margin-top: 50px;
+      padding: 12px 25px;
+      font-size: 18px;
+      border-radius: 25px;
+      border: none;
+      cursor: pointer;
+      background-color: red;
+      color: black;
+      font-weight: bold;
+    }
+    .title {
+      text-align: top;
+      font-size: 55px;
+      color: white;
+      margin: 0 20px;
+    }
+    .Vs {
+      font-size: 45px;
+      color: white;
+      margin: 0 20px;
+    }
+    .head {
+      font-size: 30px;
+      color: white;
+      margin: 0 20px;
+    }
+  </style>
+</head>
+<body> 
+  <div class="title"><u><i>Rock Paper Scissors</i></u></div>
+
+  <div id="shake-area">
+    <span class="head">User Move</span>
+    <span class="hand-shake">🤜</span>
+    <span class="Vs"> VS </span>
+    <span class="hand-shake">🤛</span>
+    <span class="head">Computer Move</span>
+  </div>
+  
+  <div id="move-area" style="display:none; margin-top:30px;"></div>
+  <div id="result"></div>
+  <div id="score"></div>
+
+  <button onclick="goBack()">Play Again</button>
+  
+  <script>
+    const playerMove = localStorage.getItem('playerMove');
+
+    function pickComputermove() {
+      const rand = Math.random();
+      if (rand < 1 / 3) return 'Rock';
+      else if (rand < 2 / 3) return 'Paper';
+      else return 'Scissor';
+    }
+
+    function getEmojiFile(move) {
+      if (move === 'Scissor') return 'scissors-emoji.png';
+      return move.toLowerCase() + '-emoji.png';
+    }
+
+    function decideResult(player, computer) {
+      if (player === computer) return 'It is a tie!';
+      if (
+        (player === 'Rock' && computer === 'Scissor') ||
+        (player === 'Scissor' && computer === 'Paper') ||
+        (player === 'Paper' && computer === 'Rock')
+      ) return 'You win!';
+      return 'You lose!';
+    }
+
+    function updateScoreDisplay(score) {
+      document.getElementById('score').innerHTML = `
+        <span>Win: ${score.wins}</span> |
+        <span>Lose: ${score.losses}</span> |
+        <span>Ties: ${score.ties}</span>
+      `;
+    }
+
+    setTimeout(() => {
+      const computerMove = pickComputermove();
+      const result = decideResult(playerMove, computerMove);
+
+      document.getElementById('shake-area').style.display = 'none';
+      document.getElementById('move-area').style.display = 'block';
+      document.getElementById('move-area').innerHTML = `
+        <span class="head">User Move</span>  <img src="${getEmojiFile(playerMove)}" alt="${playerMove}" />
+        <span class="Vs"> VS </span>
+         <img src="${getEmojiFile(computerMove)}" alt="${computerMove}" />
+         <span class="head">Computer Move</span>
+      `;
+
+      document.getElementById('result').textContent = result;
+
+      let score = JSON.parse(localStorage.getItem('score')) || { wins: 0, losses: 0, ties: 0 };
+      if (result === 'You win!') score.wins++;
+      else if (result === 'You lose!') score.losses++;
+      else score.ties++;
+
+      localStorage.setItem('score', JSON.stringify(score));
+      updateScoreDisplay(score); 
+    }, 2000);
+
+    function goBack() {
+      window.location.href = 'rock,paper scisoor.html';
+    }
+  </script>
+</body>
+</html>
